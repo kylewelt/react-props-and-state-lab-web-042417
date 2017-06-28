@@ -1,40 +1,68 @@
-import React from 'react';
+import React from 'react'
 
-import Filters from './Filters';
-import PetBrowser from './PetBrowser';
+import Filters from './Filters'
+import PetBrowser from './PetBrowser'
 
 class App extends React.Component {
-  constructor() {
-    super();
+  constructor () {
+    super()
 
     this.state = {
       pets: [],
       adoptedPets: [],
       filters: {
-        type: 'all',
+        type: 'all'
       }
-    };
+    }
+
+    this.handleChange = this.handleChange.bind(this)
+    this.handleClick = this.handleClick.bind(this)
+    this.handleAdopt = this.handleAdopt.bind(this)
   }
 
-  render() {
+  handleChange (type) {
+    this.setState({
+      filters: {
+        type: type
+      }
+    })
+  }
+
+  handleClick () {
+    const url = '/api/pets'
+    const query = this.state.filters.type
+    if (query !== 'all') {
+      fetch(url + '?type=' + query)
+    } else {
+      fetch(url)
+    }
+  }
+
+  handleAdopt (id) {
+    this.setState({
+      adoptedPets: [...this.state.adoptedPets, id]
+    })
+  }
+
+  render () {
     return (
-      <div className="ui container">
+      <div className='ui container'>
         <header>
-          <h1 className="ui dividing header">React Animal Shelter</h1>
+          <h1 className='ui dividing header'>React Animal Shelter</h1>
         </header>
-        <div className="ui container">
-          <div className="ui grid">
-            <div className="four wide column">
-              <Filters />
+        <div className='ui container'>
+          <div className='ui grid'>
+            <div className='four wide column'>
+              <Filters filters={this.state.filters} onChangeType={this.handleChange} onFindPetsClick={this.handleClick} />
             </div>
-            <div className="twelve wide column">
-              <PetBrowser />
+            <div className='twelve wide column'>
+              <PetBrowser pets={this.state.pets} adoptedPets={this.state.adoptedPets} onAdoptPet={this.handleAdopt} />
             </div>
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App
